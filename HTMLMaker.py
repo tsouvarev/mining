@@ -70,7 +70,7 @@ class HTMLMaker:
 	def add_picture (self, filename):
 	
 		self.pics_names.append (filename)
-		self.html += "<img src='%s'>" % filename
+		self.html += "<img src='%s' width='400px'>" % filename
 	
 	def add_break (self):
 	
