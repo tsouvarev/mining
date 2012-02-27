@@ -1,0 +1,257 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using System.Threading;
+
+using ZedGraph;
+namespace кардио
+{
+        public partial class MainForm : Form
+        {
+            public MainForm()
+            {
+                InitializeComponent();
+
+                DrawGraph();
+            }
+
+            public void DrawGraph()
+            {
+                double[] u = CreateCardio(1000);
+
+                double[] s = CreatePressure(100);
+                s = Normilize(s);
+                double[] v = Convolution(u, s);
+                double[] reS = new double[u.Length];
+                double[] imS = new double[u.Length];
+                double[] s2 = new double[u.Length];
+                for (int i = 0; i < s.Length; i++)
+                {
+                    s2[i] = s[i];
+                }
+                DiscreteFourierTransform(s2, ref reS, ref imS);
+
+                double[] reU = new double[u.Length];
+                double[] imU = new double[u.Length];
+                DiscreteFourierTransform(u, ref reU, ref imU);
+                double[] V = Multiply(reU, imU, reS, imS);
+                double[] v2 = DiscreteFourierTransformInverse(V);
+                double[] reV = new double[u.Length];
+                double[] imV = new double[u.Length];
+                MultiplyReIm(reS, imS, reU, imU, ref reV, ref imV);
+                double[] reG = new double[u.Length];
+                double[] imG = new double[u.Length];
+                GetGFilter(reS, imS, ref reG, ref imG);
+                double[] U2 = Multiply(reV, imV, reG, imG);
+                double[] u2 = DiscreteFourierTransformInverse(U2);
+                MasterPane masterPane = zedGraph.MasterPane;
+                masterPane.PaneList.Clear();
+                GraphPane pane1 = new GraphPane();
+                CreateGraphOnPane(u, pane1);
+                GraphPane pane2 = new GraphPane();
+                CreateGraphOnPane(s, pane2);
+                GraphPane pane3 = new GraphPane();
+                CreateGraphOnPane(v, pane3);
+                GraphPane pane5 = new GraphPane();
+                CreateGraphOnPane(u2, pane5);
+                GraphPane pane4 = new GraphPane();
+                CreateGraphOnPane(v2, pane4);
+                masterPane.Add(pane1);
+                masterPane.Add(pane2);
+                masterPane.Add(pane3);
+                masterPane.Add(pane4);
+                masterPane.Add(pane5);
+                using (Graphics g = CreateGraphics())
+                {
+                    masterPane.SetLayout(g, PaneLayout.ForceSquare);
+                }
+                zedGraph.AxisChange();
+                zedGraph.Invalidate();
+            }
+
+            //Кардиограмма
+            public double[] CreateCardio(int n)
+            {
+                double[] res = new double[n];
+
+                res[200] = 120;
+                res[400] = 125;
+                res[600] = 115;
+                res[800] = 130;
+                res[240] = -80;
+                res[440] = -85;
+                res[640] = -75;
+                res[840] = -70;
+
+                return res;
+            }
+
+            //Давление
+            public double[] CreatePressure(int n)
+            {
+                double[] pressure = new double[n];
+
+                double f = 2;
+                double t = 0;
+                for (int i = 0; i < n; i++)
+                {
+                    t += 0.005;
+                    pressure[i] = Math.Sin(2.0 * Math.PI * f * t) * Math.Exp(-t * 5);
+                }
+
+                return pressure;
+            }
+
+            //Нормирование
+            public double[] Normilize(double[] func)
+            {
+                int N = func.Length;
+                double[] res = new double[N];
+
+                double max = 0;
+                for (int i = 0; i < N; i++)
+                {
+                    if (max < func[i])
+                    {
+                        max = func[i];
+                    }
+                }
+                for (int i = 0; i < N; i++)
+                {
+                    res[i] = func[i] / max;
+                }
+
+                return res;
+            }
+
+            //Свертка
+            public double[] Convolution(double[] func1, double[] func2)
+            {
+                int N = func1.Length;
+                int M = func2.Length;
+
+                double[] convTemp = new double[N + M];
+                for (int i = 0; i < N; i++)
+                {
+                    for (int j = 0; j < M; j++)
+                    {
+                        convTemp[i + j] += func1[i] * func2[j];
+                    }
+                }
+
+                double[] conv = new double[N > M ? N : M];
+                for (int i = 0; i < conv.Length; i++)
+                {
+                    conv[i] = convTemp[i + 50];
+                }
+
+                return conv;
+            }
+
+            //Умножение комплексных чисел
+            //(a + bi)(c + di) = (ac - bd) + (bc + ad)i
+            //Возвращает модуль комплексного числа
+            public double[] Multiply(double[] reS, double[] imS, double[] reU, double[] imU)
+            {
+                double[] res = new double[reS.Length];
+                for (int i = 0; i < reS.Length; i++)
+                {
+                    double re = reS[i] * reU[i] - imS[i] * imU[i];
+                    double im = imS[i] * reU[i] + reS[i] * imU[i];
+
+                    res[i] = re + im;
+                    //res[i] = Math.Sqrt(re * re + im * im);
+                }
+
+                return res;
+            }
+
+            //Умножение комплексных чисел
+            //(a + bi)(c + di) = (ac - bd) + (bc + ad)i
+            //Возвращает модуль комплексного числа
+            public void MultiplyReIm(double[] reS, double[] imS, double[] reU, double[] imU, ref double[] re, ref double[] im)
+            {
+                for (int i = 0; i < reS.Length; i++)
+                {
+                    re[i] = reS[i] * reU[i] - imS[i] * imU[i];
+                    im[i] = imS[i] * reU[i] + reS[i] * imU[i];
+                }
+            }
+
+
+            //ДПФ
+            public void DiscreteFourierTransform(double[] func, ref double[] re, ref double[] im)
+            {
+                int N = func.Length;
+
+                double[] res = new double[N];
+
+                for (int k = 0; k < N; k++)
+                {
+                    for (int n = 0; n < N; n++)
+                    {
+                        re[k] += func[n] * Math.Cos((-2 * Math.PI * k * n) / N);
+                        im[k] += func[n] * Math.Sin((-2 * Math.PI * k * n) / N);
+                    }
+                }
+            }
+
+            //Обратное ДПФ
+            public double[] DiscreteFourierTransformInverse(double[] func)
+            {
+                int N = func.Length;
+
+                double[] res = new double[N];
+
+                for (int n = 0; n < N; n++)
+                {
+                    double re = 0;
+                    double im = 0;
+
+                    for (int k = 0; k < N; k++)
+                    {
+                        re += func[k] * Math.Cos((2 * Math.PI * k * n) / N);
+                        im += func[k] * Math.Sin((2 * Math.PI * k * n) / N);
+                    }
+
+                    re /= N;
+                    im /= N;
+
+                    res[n] = re - im;
+                }
+
+                return res;
+            }
+
+            public void GetGFilter(double[] reS, double[] imS, ref double[] re, ref double[] im)
+            {
+                for (int i = 0; i < reS.Length; i++)
+                {
+                    re[i] = reS[i] / (reS[i] * reS[i] + imS[i] * imS[i] + 0.01);
+                    im[i] = -imS[i] / (reS[i] * reS[i] + imS[i] * imS[i] + 0.01);
+                }
+            }
+
+
+            public void CreateGraphOnPane(double[] graph, GraphPane pane)
+            {
+                int N = graph.Length;
+
+                PointPairList list = new PointPairList();
+                string name = string.Empty;
+
+                for (int x = 0; x < N; x++)
+                {
+                    list.Add(x, graph[x]);
+                }
+
+                LineItem myCurve = pane.AddCurve(name, list, Color.Blue, SymbolType.None);
+            }
+        }
+    }
+
+
