@@ -17,11 +17,10 @@ class HTMLMaker:
 		self.pics_names = []
 		self.html = "<html><body>"
 		
-	def add_figure (self, data, title, dt = None):
+	def add_figure (self, data, title, dt = None, width = None, height = None):
 
 		plot.clf ()
-	
-		self.i+=1
+
 #		filename = self.pics_path + str(self.i) + ".png"
 		filename = self.pics_path + md5(title.encode('utf-8')).hexdigest() + ".png"
 #		filename = self.pics_path + title.encode('utf-8') + ".png"
@@ -40,7 +39,12 @@ class HTMLMaker:
 		plot.savefig (filename, format = "png")
 		
 		self.pics_names.append (filename)
-		self.html += "<img src='%s'>" % filename
+		self.html += "<img src='%s'" % filename
+		
+		if width is not None: self.html += " width='%s'" % width
+		elif height is not None: self.html += " height='%s'" % height
+		
+		self.html += ">"
 		
 	def add_table (self, tdata, title):
 	
@@ -67,10 +71,16 @@ class HTMLMaker:
 	
 		self.html += "<div style='clear: both;'></div>"
 	
-	def add_picture (self, filename):
+	def add_picture (self, filename, width = None, height = None):
 	
 		self.pics_names.append (filename)
-		self.html += "<img src='%s' width='400px'>" % filename
+		
+		self.html += "<img src='%s'" % filename
+		
+		if width is not None: self.html += " width='%s'" % width
+		elif height is not None: self.html += " height='%s'" % height
+		
+		self.html += ">"
 	
 	def add_break (self):
 	

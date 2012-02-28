@@ -5,7 +5,7 @@ from math import sin, cos, pi, sqrt, exp, log
 from maintenance import fourier, fourier_inv, conv, conv_freq
 from maintenance_2dim import fourier_2dim#, fourier_inv_2dim
 from filters import lpf, hpf, bpf, bsf #_seemed_worked
-from numpy import array, zeros, append, ones, empty, concatenate
+from numpy import array, zeros, append, ones, empty, concatenate, uint8
 from PIL import Image
 from HTMLMaker import HTMLMaker
 from time import time
@@ -323,28 +323,11 @@ def gomomorf (pic, path, filter_func, f1 = None, f2 = None, suf = None):
 	html.add_picture (path + "/" + str(suf) + "_" + pic)
 	html.add_break ()
 
-def hist_eq (pic):
+def get_hist (im_p, (w,h)):
 
-	# открываем картинку
-	im = Image.open (pic)
-	
-	html.add_picture (pic)
-
-	# выделяем память под новое изображение
-	out = Image.new ("L", im.size)
-	w, h = im.size
-
-	# массив пикселей начального изображения
-	new = zeros (im.size)
-	# гистограмма
+	new = zeros ((w,h), dtype=uint8)
 	hist = zeros (256)
-	# таблица преобразования
-	trans = zeros (256)
-
-	# получаем объекты для удобного доступа к пикселям
-	im_p = im.load()
-	out_p = out.load()
-
+	
 	# заполняем массив пикселями начального изображения
 	for x in range (w):
 
@@ -352,7 +335,7 @@ def hist_eq (pic):
 
 	#		если пиксель представлено одним числом, то это ч/б изображение
 	#		и можно его брать прям так
-			if type (im_p[x,y]) is not list and type (im_p[x,y]) is not tuple: 
+			if type (im_p[x,y]) not in [list, tuple]: 
 		
 				new[x,y] = im_p [x,y]
 		
@@ -367,27 +350,67 @@ def hist_eq (pic):
 			else:
 		
 				r,g,b = im_p[x,y]
-				new[x,y] = 0.3 * r + 0.59 * g + 0.11 * b
+				new[x,y] = int (0.3 * r + 0.59 * g + 0.11 * b)
 		
 	#		сразу считаем гистограмму: сколько пикселей на каждом уровне яркости
-			hist[ int(new[x,y]) ] += 1
+			hist[ new[x,y] ] += 1
+			
+	return new, hist
+
+def get_cdf (hist):
+
+	return array ([sum (hist[:i]) for i in range (256)])
+
+def hist_eq (pic):
+
+	# открываем картинку
+	im = Image.open (pic)
+	
+	html.add_picture (pic, height = '800px')
+
+	# выделяем память под новое изображение
+	out = Image.new ("L", im.size)
+	w, h = im.size
+
+	# массив пикселей начального изображения
+	new = zeros (im.size, dtype=uint8)
+	# гистограмма
+	hist = zeros (256)
+	# таблица преобразования
+	trans = zeros (256)
+
+	# получаем объекты для удобного доступа к пикселям
+	im_p = im.load()
+	out_p = out.load()
+
+	new, hist = get_hist (im_p, im.size)
 	
 	# таблица трансформации
-	trans = array ([sum (hist[:i]) for i in range (256)])
+	trans = get_cdf (hist)
 
-	html.add_figure (hist, u"Гистограмма")
-	html.add_figure (trans, u"Эквализированная гистограмма")
+	html.add_figure (hist, u"Гистограмма (%s)" % pic, height = '800px')
+	html.add_figure (trans, u"Эквализированная гистограмма (%s)" % pic, height = '800px')
+	
+	trans *= 255. / (h*w)
 	
 	# преобразовываем пиксели начального изображения
 	for x in range (w):
 
 		for y in range (h):
 		
-			out_p[x,y] = 255. * trans[int (new[x,y])] / (h * w)
-
+			out_p[x,y] = trans[new[x,y]] #/ (h * w)
+	
+	a, h2 = get_hist (out_p, im.size)
 	# сохраняем новое изображение
 	out.save ("pics/"+pic+"_res.jpg", "JPEG")
-	html.add_picture (pic+"_res.jpg")
+
+	html.add_break ()
+	html.add_break ()
+	html.add_picture ("pics/"+pic+"_res.jpg", height = '800px')	
+	html.add_figure (h2, u"Гистограмма итогового изображения (%s)" %pic, height = '800px')
+	html.add_figure (get_cdf (h2), u"Эквализированная гистограмма\nитогового изображения (%s)" % pic, height = '800px')
+	
+	html.add_break ()
 	html.add_break ()
 
 t0 = time()
@@ -399,8 +422,9 @@ t0 = time()
 #lab3 ()
 #lab4 ()
 
-#hist_eq ("XR.jpg")
-hist_eq ("image001.jpg")
+hist_eq ("XRx1024.jpg")
+hist_eq ("XR.jpg")
+#hist_eq ("b.jpg")
 
 #t = time()
 #lab5 ("pic2.jpg", ".", lpf, 0.01, suf = "lpf")
