@@ -3,16 +3,11 @@
 
 from math import sin, cos, pi, sqrt, exp, log
 from maintenance import fourier, fourier_inv, conv, conv_freq
-from maintenance_2dim import fourier_2dim#, fourier_inv_2dim
-from filters import lpf, hpf, bpf, bsf #_seemed_worked
+from filters import lpf, hpf, bpf, bsf
 from numpy import array, zeros, append, ones, empty, concatenate, uint8
 from PIL import Image
 from HTMLMaker import HTMLMaker
 from time import time
-#import psyco
-
-#psyco.full()
-#psyco.profile()
 
 re = 0; im = 1; amp = 2; comp = 3
 
