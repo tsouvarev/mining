@@ -422,9 +422,9 @@ t0 = time()
 #lab3 ()
 #lab4 ()
 
-hist_eq ("XRx1024.jpg")
-hist_eq ("XR.jpg")
-#hist_eq ("b.jpg")
+#hist_eq ("XRx1024.jpg")
+#hist_eq ("XR.jpg")
+hist_eq ("b.jpg")
 
 #t = time()
 #lab5 ("pic2.jpg", ".", lpf, 0.01, suf = "lpf")
