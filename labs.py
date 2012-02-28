@@ -415,41 +415,9 @@ def hist_eq (pic):
 
 t0 = time()
 
-#init ()
-#lab0 ()
-#lab1 ()
-#lab2 ()
-#lab3 ()
-#lab4 ()
-
 #hist_eq ("XRx1024.jpg")
 #hist_eq ("XR.jpg")
 hist_eq ("b.jpg")
-
-#t = time()
-#lab5 ("pic2.jpg", ".", lpf, 0.01, suf = "lpf")
-#print time()-t
-
-#t = time()
-#lab5 ("pic3.jpg", "pics", hpf, 0.1, suf = "hpf")
-#print time()-t
-
-#lab5 ("pic2.jpg", "pics", bpf, 0.01, 0.05)
-
-#t = time()
-#lab5 ("pic3.jpg", ".", bpf, 0.001, 0.3, "bpf")
-#print time()-t
-
-#t = time()
-#lab5 ("pic3.jpg", ".", bsf, 0.001, 0.3, "bsf")
-#print time()-t
-
-#bp = bpf (0.1, 0.01, 1)
-#	
-#html.add_figure (bp, u"Полосовой фильтр")
-
-#gomomorf ("bw_pic3.jpg", "pics", lpf, 0.29, suf = "gomo")
-
 
 print time() - t0
 
