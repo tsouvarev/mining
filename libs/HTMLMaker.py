@@ -5,6 +5,7 @@ import matplotlib.pyplot as plot
 from hashlib import md5
 from matplotlib import rc
 from matplotlib.figure import Figure as fig
+from random import random
 
 class HTMLMaker:
 	
@@ -22,7 +23,7 @@ class HTMLMaker:
 		plot.clf ()
 
 #		filename = self.pics_path + str(self.i) + ".png"
-		filename = self.pics_path + md5(title.encode('utf-8')).hexdigest() + ".png"
+		filename = self.pics_path + md5(title.encode('utf-8') + str (random())).hexdigest() + ".png"
 #		filename = self.pics_path + title.encode('utf-8') + ".png"
 	
 		if title is not None: plot.title (title)
