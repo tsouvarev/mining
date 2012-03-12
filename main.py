@@ -12,7 +12,7 @@ t0 = time()
 
 #hist_eq ("XRx1024.jpg")
 #hist_eq ("XR.jpg")
-hist_eq (path ("pics_in/b.jpg"), html)
+hist_eq (path ("pics_in/arch.png"), html)
 
 print time() - t0
 
