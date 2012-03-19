@@ -72,8 +72,8 @@ def hist_eq (pic, html):
 	# таблица трансформации
 	trans = get_cdf (hist)
 
-	html.add_figure (hist, u"Гистограмма (%s)" % pic, height = '800px')
-	html.add_figure (trans, u"Эквализированная гистограмма (%s)" % pic, height = '800px')
+	html.add_figure (hist, u"Гистограмма (%s)" % base (pic), height = '800px')
+	html.add_figure (trans, u"Эквализированная гистограмма (%s)" % base (pic), height = '800px')
 	
 	trans *= 255. / (h*w)
 	
@@ -94,8 +94,8 @@ def hist_eq (pic, html):
 	html.add_break ()
 	html.add_break ()
 	html.add_picture ("pics_out/"+pic+"_res.jpg", height = '800px')	
-	html.add_figure (h2, u"Гистограмма итогового изображения (%s)" %pic, height = '800px')
-	html.add_figure (get_cdf (h2), u"Эквализированная гистограмма\nитогового изображения (%s)" % pic, height = '800px')
+	html.add_figure (h2, u"Гистограмма итогового изображения (%s)" % base (pic), height = '800px')
+	html.add_figure (get_cdf (h2), u"Эквализированная гистограмма\nитогового изображения (%s)" % base (pic), height = '800px')
 	
 	html.add_break ()
 	html.add_break ()
