@@ -81,9 +81,31 @@ def conv_freq (i, j):
 		
 	return v[:len(i)]
 	
+def autocorrelation (x):
+
+	N = len (x)
+	r_xx = zeros (N)
 	
+	for i in range (N):
 	
+		for t in range (i, N):
+		
+			r_xx[i] += x[t] * x[t-i]
+			
+	return r_xx
 	
+def maximum (x, l=None, r=None):
+
+	N = len (x)
+	m = []
+	if l is None: l = 1
+	if r is None: r = N-1	
+	
+	for i in range (l, r):
+	
+		if x[i-1] < x[i] > x[i+1]: m.append ((x[i], i,))
+		
+	return m
 	
 	
 	

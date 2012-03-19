@@ -26,7 +26,7 @@ class HTMLMaker:
 		filename = self.pics_path + md5(title.encode('utf-8') + str (random())).hexdigest() + ".png"
 #		filename = self.pics_path + title.encode('utf-8') + ".png"
 	
-		if title is not None: plot.title (title)
+		if title is not None: plot.title (unicode (title))
 	
 		if dt is not None: 
 			
