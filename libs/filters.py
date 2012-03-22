@@ -10,10 +10,8 @@ def lpf (fc, dt = None, L = None, m = None):
 
 	if dt == None: dt = 1
 	if m == None: m = 32
-	if fc >= 1/(2.0*dt): 
-		
-		print "fc > 1/2dt!!"
-		#return None
+
+	if fc >= 1/(2.0*dt): raise Exception ("fc > 1/2dt!!")		
 	
 	fact = 2 * fc * dt
 	lpf = array([fact]); d = [0.35577019, 0.2436983, 0.07211497, 0.00630165]
