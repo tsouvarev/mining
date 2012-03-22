@@ -20,13 +20,14 @@ def convert (filename_in, filename_out):
 	
 	arr = empty (w*h)
 	
-	for i in range (w*3): 
+	for i in range (w*h): 
 	
-		c = f.read (2)
+		c1, c2, = unpack ('>BB', f.read (2))
 	
-		print unpack ('>H', c), unpack ("<H", c)
+#		print unpack ('>H', c)
 		
-		#arr[i], = unpack ('>H', f.read (2))
+#		arr[i], = unpack ('>H', c)
+		arr[i] = c1 + c2 << 8
 	
 	arr /= 65536. 
 	arr *= 255
@@ -35,6 +36,3 @@ def convert (filename_in, filename_out):
 	out = out.transpose (Image.ROTATE_90)
 	out.save (filename_out, "BMP")
 
-t = time()
-convert ("/home/minime/Desktop/Xray.kcr", "/home/minime/Desktop/mining/Xray.bmp")
-print time() - t
