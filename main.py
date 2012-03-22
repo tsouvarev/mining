@@ -16,42 +16,41 @@ html = HTMLMaker ("./", "pics_out/")
 
 t0 = time()
 
-i = Image.open (path ("/home/minime/Desktop/mining/pics_in/XRx1024_clear.jpg")) # 
-#out = Image.new (i.size)
-#out_p = out.load()
+pic = "/home/minime/Desktop/mining/pics_in/XRx1024_clear.jpg"
+html.add_picture (pic, width = 500)
 
-
-
+i = Image.open (pic)
 w,h = i.size
 i = i.load()
 
 out = empty (0)
 
-#a = [sin (2 * pi * 100 * x * 0.001)+sin (2 * pi * 200 * x * 0.001) for x in range (100)]
+######### вкратце содержание серии: считаем частоту, на которой находятся полоски, и которую потом будем вырезать
 a = [i[y, 0] for y in range (w)]
 f = fourier (a)
 
+# в преобразовании фурье находим пики (значит, на этой частоте соотв. периодичность)
+# из всех пиков выбираем максимальный и запоминаем его индекс
+# пропускаем первые 30 значений (не меньше 10, там трэшак творится)
+# и идем до середины массива (у фурье половины зеркально симметричны)
 freq, ind = max(maximum (f[:,amp], l = 30, r = len(f)//2))
-
-print ind
-
+# масштабируем индекс по шкале [0;0.5]
 ind = ind / float (len(f)//2) *0.5
-
-print ind
-
+# фильтровать будем режекторным фильтром, задаем ему небольшую рамку вокруг нашей частоты
 filt = bsf (ind-0.2, ind+0.1, dt=1)
 
+# применяем свертку к изображению построчно
+# вопрос: нужна ли тут двумерная свертка, если и так все работает?
 for y in range (h):
 
 	a = [i[x, y] for x in range (w)]
 	out = append (out, conv (a, filt))
 
+# сохраняем новое изображение
 img = Image.new("L", (w,h))
 img.putdata (out)
 img.save ("pics_out/out.jpg", "JPEG")
-
-#kespr2bmp (	"/home/minime/Desktop/mining/pics_in/Xray.kcr", 
-#		"/home/minime/Desktop/mining/pics_out/Xray.bmp")
+html.add_picture ("pics_out/out.jpg", width = 500)
 
 print time() - t0
 
