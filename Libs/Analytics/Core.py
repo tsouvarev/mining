@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from math import sin, cos, pi, sqrt, exp
-from numpy import array, zeros, append, concatenate, empty
+from numpy import array, zeros, append, concatenate, empty, convolve as cnvlv
+from numpy.fft import fft
 from itertools import izip_longest
 from multiprocessing import Pool
 
@@ -31,6 +32,11 @@ def fourier (data, l = None):
 		return array (Pool().map (fourier_part, [(data,x) for x in range(N)]))
 	else:
 		return array (Pool().map (fourier_part, [(data,x) for x in range(l)]))
+		
+def f (data):
+
+	return array ([(z.real, z.imag, z.real-z.imag, z.real*z.real+z.imag*z.imag) 
+					for z in list (fft(data))])
 		
 def fourier_inv_part ((s,j)):
 
@@ -66,6 +72,10 @@ def conv (u, s):
 #	skip = L/2 if N==L else 0
 	skip = 0 if N==L else L/2
 	return v[skip:][:N]
+	
+def convolve (x, y, mode = "same"):
+
+	return cnvlv (x, y, mode)
 
 def conv_freq (i, j):
 
