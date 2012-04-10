@@ -36,7 +36,7 @@ def fourier (data, l = None):
 def f (data):
 
 	return array ([(z.real, z.imag, z.real-z.imag, z.real*z.real+z.imag*z.imag) 
-					for z in list (fft(data))])
+			for z in list (fft(data))])
 		
 def fourier_inv_part ((s,j)):
 
@@ -116,6 +116,21 @@ def maximum (x, l=None, r=None):
 		if x[i-1] < x[i] > x[i+1]: m.append ((x[i], i,))
 		
 	return m
+
+def derivative (x):
+
+	
+#	double[] fillDRow(double[] r)
+#{
+#int N = r.Length;
+#double[] res = new double[N- 1];
+#for (int i = 1; i < N; i++)
+#res[i - 1] = r[i] - r[i - 1];
+#return res;
+#};	
+
+	return array ([x[i+1]-x[i] for i in range (len(x)-1)])
+
 	
 	
 	
@@ -138,6 +153,6 @@ def maximum (x, l=None, r=None):
 	
 	
 	
-	
+
 	
 	

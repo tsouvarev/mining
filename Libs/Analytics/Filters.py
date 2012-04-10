@@ -50,7 +50,7 @@ def lpf (fc, dt = None, L = None, m = None, truncate = False):
 def hpf (fc, dt = None, L = None, m = None, truncate = False):
 
 	f = -1 * lpf (fc, dt, L, m, truncate)
-	f[ len (f) / 2 ] = 1 + f[ len(f) / 2 ]
+	f[ len (f) // 2 ] = 1 + f[ len(f) // 2 ]
 	
 	return f
 	
@@ -67,7 +67,7 @@ def bsf (fc1, fc2, dt = None, L = None, m = None, truncate = False):
 	lpf2 = lpf (fc2, dt, L, m, truncate)
 
 	f = lpf1 - lpf2
-	f[ len (f) / 2 ] = 1 + lpf1[ len (lpf1) / 2 ] - lpf2[ len (lpf2) / 2 ]
+	f[ len (f) // 2 ] = 1 + lpf1[ len (lpf1) // 2 ] - lpf2[ len (lpf2) // 2 ]
 	
 	return f
 
