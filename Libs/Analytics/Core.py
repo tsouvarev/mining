@@ -104,6 +104,19 @@ def autocorrelation (x):
 			
 	return r_xx
 	
+def correlation (x, y):
+
+	N = len (x)
+	r_xy = zeros (N)
+	
+	for i in range (N):
+	
+		for t in range (i, N):
+		
+			r_xy[i] += x[t] * y[t-i]
+			
+	return r_xy
+	
 def maximum (x, l=None, r=None):
 
 	N = len (x)

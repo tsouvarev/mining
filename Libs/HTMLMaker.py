@@ -72,11 +72,13 @@ class HTMLMaker:
 	
 		self.html += "<div style='clear: both;'></div>"
 	
-	def add_picture (self, filename, width = None, height = None):
+	def add_picture (self, filename, width = None, height = None, title = None):
 	
 		self.pics_names.append (filename)
 		
 		self.html += "<img src='%s'" % filename
+		
+		if title is not None: self.html += " alt='%s'" % title
 		
 		if width is not None: self.html += " width='%s'" % width
 		elif height is not None: self.html += " height='%s'" % height

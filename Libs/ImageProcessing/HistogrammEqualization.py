@@ -45,10 +45,10 @@ def get_cdf (hist):
 
 	return array ([sum (hist[:i]) for i in range (256)])
 
-def hist_eq (pic):
+def hist_eq (im):
 
 	# открываем картинку
-	im = Image.open (pic)
+	#im = Image.open (pic)
 	
 #	html.add_picture (pic, height = '800px')
 
